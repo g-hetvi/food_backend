@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <title>
+    Admin Panel
+  </title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link id="pagestyle" href="../assets/css/argon-dashboard.css?v=2.0.4" rel="stylesheet" />
+  <script defer src="validate.js"></script>
+</head>
+<style>
+ .modal-content {
+            border-radius: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            width: 600px;
+            border: 1px solid rgba(0, 0, 0, .2);
+        }
+        .modal-header h5{
+            border-bottom: none;
+        }
+        .modal-header h5 {
+            font-size: 1.5rem;
+        }
+        .btn-custom {
+            background-color: #26355D;
+            color: white;
+        }
+        .btn-secondary-custom {
+            background-color: rgba(229, 229, 229, 0.525);
+        }
+        .btn-secondary-custom a {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+        }
+</style>
+<body class="g-sidenav-show   bg-gray-100">
+  <div class="min-height-300 position-absolute w-100"></div>
+  <%- include('sidebar') %>
+  <main class="main-content position-relative border-radius-lg ">
+    <!-- Navbar -->
+    <%- include('navbar',{header:"Food",pagename:"Food"}) %>
+  </main>
+  <!--   Core JS Files   -->
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+  <script src="../assets/js/plugins/chartjs.min.js"></script>
+
+<!-- Navbar -->
+<main class="main-content mt-0">
+  <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg">
+    <!-- <span class="mask bg-gradient-dark opacity-6"></span> -->
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-5 text-center mx-auto">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">
+      <div class="col-xl-4 col-lg-5 col-md-7 mx-auto" style="margin-top: -200px;">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="text-center pt-4" style="font-weight: 700;">
+              <h5>EDIT FOOD</h5>
+            </div>
+            <form id="form" action="/food/update" method="post" enctype="multipart/form-data" role="form">
+              <div class="modal-body form-group text-center">
+                <input type="hidden" name="_id" value="<%= foods._id %>">
+                <% if (foods.icon) { %>
+                  <img id="editPackageImagePreview" src="/images/<%= foods.icon %>" alt="Icon Preview" style="width: 100px; height: 100px; border-radius: 50%;margin-bottom: 20px;">
+                <% } %>
+                <input type="file" name="icon" class="form-control" placeholder="icon" aria-label="icon" accept="image/*">
+              </div>
+              <div class="form-group">
+                <label  style="font-size: 18px; font-weight: 500; text-align: left; display: block;">Title:</label>
+                <input type="text" name="title" id="title" class="form-control" placeholder="Title" aria-label="title" value="<%= foods.title %>">
+              </div>
+              <div class="form-group">
+                <label  style="font-size: 18px; font-weight: 500; text-align: left; display: block;">Description:</label>
+                <input type="text" name="description" id="description" class="form-control" placeholder="Description" aria-label="description" value="<%= foods.description %>">
+              </div>
+              <div class="form-group">
+                  <label  style="font-size: 18px; font-weight: 500; text-align: left; display: block;">Category:</label>
+                  <input type="text" name="category" id="category" class="form-control" placeholder="Category" aria-label="Category" value="<%= foods.category%>">
+                </div>
+            <div class="form-group">
+                <label  style="font-size: 18px; font-weight: 500; text-align: left; display: block;">Price:</label>
+                <input type="text" name="price" id="price" class="form-control" placeholder="price" aria-label="price" value="<%= foods.price %>">
+              </div>
+              <div id="error-message" style="color: red;margin-top: 10px;text-align: center;"></div>
+              <div class="modal-footer">
+                <button id="submit" type="submit" class="btn btn-primary w-100 my-2" style="background-color:#26355D; color: white;">Update</button>
+                <button id="submit" type="submit" class="btn btn-primary w-100 my-2" style="background-color:#ffffff;"><a href="/food/list" style="color: black;font-weight: 600;">Cancle</a></button>
+              </div>
+            </form>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+   <!-- validation error -->
+   <script>
+    document.getElementById('form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      try {
+        const response = await fetch('http://localhost:4001/food/update', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          if (result.code === 400) {
+            document.getElementById('error-message').innerText = result.message;
+          } else {
+            document.getElementById('error-message').innerText = 'An unexpected error occurred';
+          }
+        } else {
+          window.location.href = '/food/list';  
+        }
+      } catch (error) {
+        window.location.href = '/food/list';  
+        // document.getElementById('error-message').innerText = 'An unexpected error occurred catch';
+      }
+    });
+  </script>
+<!-- -------- START FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
+
+<!-- -------- END FOOTER 3 w/ COMPANY DESCRIPTION WITH LINKS & SOCIAL ICONS & COPYRIGHT ------- -->
+<!--   Core JS Files   -->
+<script src="../assets/js/core/popper.min.js"></script>
+<script src="../assets/js/core/bootstrap.min.js"></script>
+<script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
+<script>
+  var win = navigator.platform.indexOf('Win') > -1;
+  if (win && document.querySelector('#sidenav-scrollbar')) {
+    var options = {
+      damping: '0.5'
+    }
+    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+  }
+</script>
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="../assets/js/argon-dashboard.min.js?v=2.0.4"></script>
+</body>
+</html>
