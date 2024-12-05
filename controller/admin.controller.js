@@ -11,7 +11,7 @@ const otpgenerate = require("otp-generator");
   try {
     const obj = {
       username: "admin",
-      email: "radhimiyani218@gmail.com",
+      email: "hetvigondaliya2004@gmail.com",
       password: "admin@#",
     };
      const exitsUser=await User.find({role:"admin"})

@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const { hashSync, compareSync } = require("bcrypt");
+// const nodemoailer = require('nodemailer')
 
 const signup = async (req, res) => {
     try {

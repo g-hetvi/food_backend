@@ -1,11 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const userSchema = new Schema({
-    user_name: {
-        type: String,
-        default: null
-    },
+const userSchema = new Schema( {
     fullname: {
         type: String,
         default: null
@@ -17,11 +13,7 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
-    }, 
-    icon: {
-        type: String,
-        default: null
-    }, 
+    },  
     status: {
         type: Number,
         required: true,
