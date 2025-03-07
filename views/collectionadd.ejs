@@ -59,7 +59,7 @@
   <%- include('sidebar') %>
   <main class="main-content position-relative border-radius-lg ">
     <!-- Navbar -->
-    <%- include('navbar',{header:"Food",pagename:"Food"}) %>
+    <%- include('navbar',{header:"products",pagename:"products"}) %>
   </main>
 <main class="main-content mt-0">
   <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg">
@@ -70,9 +70,9 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="text-center pt-4">
-                        <h5 style="font-weight: 700; font-size: 25px;">ADD FOOD</h5>
+                        <h5 style="font-weight: 700; font-size: 25px;">ADD PRODUCTS</h5>
                     </div>
-                    <form action="/food/add" method="post" role="form" id="signForm" enctype="multipart/form-data">
+                    <form action="/collection/add" method="post" role="form" id="signForm" enctype="multipart/form-data">
                         <div class="modal-body">
                             <div class="form-group">
                               <input type="file" name="icon" class="form-control" placeholder="icon" aria-label="icon" required>
@@ -86,8 +86,13 @@
                                 <textarea name="description" id="description" class="form-control" placeholder="Description" aria-label="description"  minlength="3"></textarea>
                             </div>
                             <div class="form-group">
-                              <label  style="font-size: 18px; font-weight: 500; text-align: left; display: block;">Category:</label>
-                              <input type="text"   name="category" id="category" class="form-control" placeholder="Category" aria-label="category" required >
+                              <label style="font-size: 18px; font-weight: 500; text-align: left; display: block;">Category:</label>
+                              <select name="category" id="category" class="form-control" required>
+                                  <option value="" disabled selected>Select Category</option>
+                                  <option value="seasonalCollection">Seasonal Collection</option>
+                                  <option value="Bestsellers">Bestsellers</option>
+                                  <option value="LimitedEdition">Limited Edition</option>
+                              </select>
                           </div>
                           <div class="form-group">
                             <label  style="font-size: 18px; font-weight: 500; text-align: left; display: block;">Price:</label>
@@ -97,7 +102,7 @@
                         </div>
                         <div class="modal-footer">
                           <button id="submit" type="submit" class="btn btn-primary w-100 my-2" style="background-color:#26355D; color: white;">Add</button>
-                          <a href="/food/list" class="w-100">
+                          <a href="/collection/list" class="w-100">
                             <button type="button" class="btn w-100" style="margin-bottom: 20px; margin-top: 15px;">Cancel</button>
                           </a>
                         </div>
@@ -114,7 +119,7 @@
     e.preventDefault();
     const formData = new FormData(this);
     try {
-      const response = await fetch('http://localhost:4001/food/add', {
+      const response = await fetch('http://localhost:4001/collection/add', {
         method: 'POST',
         body: formData
       });
@@ -126,7 +131,7 @@
           document.getElementById('error-message').innerText = 'An unexpected error occurred';
         }
       } else {
-        window.location.href = '/food/list';
+        window.location.href = '/collection/list';
       }
     } catch (error) {
       document.getElementById('error-message').innerText = 'An unexpected error occurred';

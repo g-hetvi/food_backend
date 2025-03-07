@@ -1,15 +1,15 @@
 const { StatusCodes } = require('http-status-codes');
-const Item=require("../models/items.model")
+const collection=require("../models/allproduct.model")
 const HTTP = require("../helper/http");
 const { body, validationResult } = require('express-validator');
 const path = require("path");
 const mongoose=require("mongoose")
 const fs = require("fs");
 
-const addAccountType = async (req, res) => {
+const addCollection = async (req, res) => {
   try {
     const { title, description,category,price } = req.body;
-    const existingAccountType = await Item.findOne({ title: title });
+    const existingAccountType = await collection.findOne({ title: title });
     if (existingAccountType) {
       return res.status(400).json({
         status: false,
@@ -26,20 +26,21 @@ const addAccountType = async (req, res) => {
         data: {},
       });
     } 
-    const accountDetails = {
+    const Details = {
       icon: req.file.filename,
       title: title,
       description: description,
       category:category,
       price:price
-    };
-    await Item.create(accountDetails);
-    res.redirect("/food/list")
+    }; 
+    const data=await collection.create(Details);
+
+    res.redirect("/collection/list")
     // return res.status(201).json({
     //   status: true,
     //   code: 201,
     //   message: "Account type created successfully.",
-    //   data: {},
+    //   data: data,
     // });
   } catch (error) {
     console.log(error);
@@ -53,7 +54,7 @@ const addAccountType = async (req, res) => {
   }
 };
 
-const accountTypeUpdate = async (req, res) => {
+const collectionUpdate = async (req, res) => {
   try {
     const { title, description, _id, category, price } = req.body;
 
@@ -65,25 +66,25 @@ const accountTypeUpdate = async (req, res) => {
       });
     }
 
-    const accountType = await Item.findById(_id);
-    if (!accountType) {
+    const collectionType = await collection.findById(_id);
+    if (!collectionType) {
       return res.status(404).json({
         status: false,
         code: 404,
-        message: "Account type not found.",
+        message: "This is not found.",
       });
     }
 
-    const existingAccountType = await Item.findOne({
+    const existingCollection = await collection.findOne({
       title,
       _id: { $ne: _id }, 
     });
 
-    if (existingAccountType) {
+    if (existingCollection) {
       return res.status(400).json({
         status: false,
         code: 400,
-        message: "Account type already exists. Please use a different name.",
+        message: " This is already exists. Please use a different name.",
       });
     }
 
@@ -104,8 +105,8 @@ const accountTypeUpdate = async (req, res) => {
     };
 
     if (req.file) {
-      if (accountType.icon) {
-        const oldFilePath = path.join(__dirname, "images", accountType.icon);
+      if (collectionType.icon) {
+        const oldFilePath = path.join(__dirname, "images", collectionType.icon);
         if (fs.existsSync(oldFilePath)) {
           fs.unlinkSync(oldFilePath);
         }
@@ -113,9 +114,9 @@ const accountTypeUpdate = async (req, res) => {
       updatedDetails.icon = req.file.filename;
     }
 
-    await Item.findByIdAndUpdate(_id, updatedDetails, { new: true });
+    await collection.findByIdAndUpdate(_id, updatedDetails, { new: true });
 
-    return res.redirect("/food/list");
+    return res.redirect("/collection/list");
   } catch (error) {
     console.log(error);
     return res.status(400).json({
@@ -127,13 +128,13 @@ const accountTypeUpdate = async (req, res) => {
   }
 };
 
-const accountTypeDelete = async (req, res) => {
+const collectionDelete = async (req, res) => {
   try {
-    const { food_id } = req.query;
+    const { delete_id } = req.query;
 
-    const categoryWithAccountType = await Item.findOneAndDelete({ _id: food_id });
+    const detalis = await collection.findOneAndDelete({ _id: delete_id });
 
-    if (!categoryWithAccountType) {
+    if (!detalis) {
       return res.status(404).send({
         status: false,
         code: 404,
@@ -146,7 +147,7 @@ const accountTypeDelete = async (req, res) => {
       status: true,
       code: 200,
       message: "Deleted Successfully",
-      data: categoryWithAccountType, 
+      data: detalis, 
     });
   } catch (error) {
     console.log(error);
@@ -165,16 +166,16 @@ const sideBar=(req,res)=>{
 const homeDeshboard = async (req, res) => {
   res.render("deshboard");
 };
-const accountEdit = async (req, res) => {
-  const { food_id } = req.query;
-  const foods = await Item.findOneAndUpdate(
-    { _id: food_id },
+const collectionEdit = async (req, res) => {
+  const { collection_id } = req.query;
+  const product = await collection.findOneAndUpdate(
+    { _id: collection_id },
     req.body,
     { new: true }
   );
-  res.render("foodedit", { foods });
+  res.render("productedit", { product });
 };
-const accountTypes = async (req, res) => {
+const collections = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -184,38 +185,40 @@ const accountTypes = async (req, res) => {
       status: { $ne: 0 },
       title: { $regex: search, $options: 'i' }
     };
-    const food = await Item.find(searchQuery)
+    const collectionlist = await collection.find(searchQuery)
                                       .skip(skip)
                                       .limit(limit);
-    const totalAccounts = await Item.countDocuments(searchQuery);
-    const totalPages = Math.ceil(totalAccounts / limit);
-    res.render("food", {
-      food: food,
+    const total = await collection.countDocuments(searchQuery);
+    const totalPages = Math.ceil(total / limit);
+    res.render("collections", {
+      collectionlist: collectionlist,
       currentPage: page,
       totalPages: totalPages,
       limit: limit,
-      totalAccounts: totalAccounts,
+      total: total,
       search: search
     });
-  } catch (error) {
+  } catch (error) {  
     return res.status(400).send({
       status: false,
       code: 400,
-      error: "Error fetching accounts",
+      error: "Error fetching",
       data: {}
     });
   }
 };
 const uiAdd = async (req, res) => {
-  res.render('foodadd');
+  res.render('collectionadd');
 };
 const Active=async(req,res)=>{
   try{
         const {id} = req.query;
-        const data=await Item.findOneAndUpdate({_id:id}, { isActive: '1' },{new:true});
-        res.redirect("/food/list"); 
+        const data=await collection.findOneAndUpdate({_id:id}, { isActive: '1' },{new:true});
+        res.redirect("/collection/list"); 
         
     } catch (error) {
+      console.log(error);
+      
       return res.status(HTTP.BAD_REQUEST).send({
         status: false,
         code: HTTP.BAD_REQUEST,
@@ -227,9 +230,11 @@ const Active=async(req,res)=>{
 const Deactive=async(req,res)=>{
     try{
            const {id} = req.query;
-         const data= await Item.findByIdAndUpdate({_id:id}, { isActive: '0' },{new:true});
-         res.redirect("/food/list");
+         const data= await collection.findByIdAndUpdate({_id:id}, { isActive: '0' },{new:true});
+         res.redirect("/collection/list");
       } catch (error) {
+        console.log(error);
+        
         return res.status(HTTP.BAD_REQUEST).send({
           status: false,
           code: HTTP.BAD_REQUEST,
@@ -239,12 +244,12 @@ const Deactive=async(req,res)=>{
       }
 }
 module.exports = {
-  addAccountType,
-  accountTypeUpdate,
-  accountTypeDelete,
+  addCollection,
+  collectionUpdate,
+  collectionDelete,
   homeDeshboard,
-  accountTypes,
-  accountEdit,
+  collections,
+  collectionEdit,
   uiAdd,
   Active,
   Deactive,

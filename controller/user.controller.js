@@ -1,10 +1,13 @@
 const User = require("../models/user.model");
 const { hashSync, compareSync } = require("bcrypt");
-// const nodemoailer = require('nodemailer')
 
 const signup = async (req, res) => {
     try {
         const { fullname, email, password } = req.body;
+
+        if (!fullname || !email || !password) {
+            return res.status(400).json({ success: false, message: "All fields are required!" });
+        }
 
         // Check if the user already exists
         const user = await User.findOne({ email });
@@ -39,7 +42,7 @@ const signup = async (req, res) => {
         });
     }
 };
- 
+  
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -65,12 +68,9 @@ const login = async (req, res) => {
 
         // If the login is successful
         res.status(200).json({
+            status: true,
             message: "Login successful",
-            user: {
-                _id: user._id,
-                fullname: user.fullname,
-                email: user.email,
-            },
+            data: { _id: user._id, fullname: user.fullname, email: user.email },
         });
 
     } catch (error) {
@@ -79,41 +79,5 @@ const login = async (req, res) => {
     }
 };
 
- 
 
-const updateProfile = async (req, res) => { 
-    console.log("Update profile request received"); // Log when request is received
-    console.log(req.body); // Check the request body
-  
-    const { fullname, email, address, gender } = req.body;
-  
-    try {
-      const user = await User.findById(req.user._id);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-  
-      // Check if email is being changed and if it's already taken
-      if (email !== user.email) {
-        const emailExists = await User.findOne({ email });
-        if (emailExists) {
-          return res.status(400).json({ error: "Email is already in use." });
-        }
-      }
-  
-      user.fullname = fullname;
-      user.email = email;
-      user.address = address;
-      user.gender = gender;
-  
-      const updatedUser = await user.save();
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      console.error("Error updating profile:", error); // Log errors for debugging
-      res.status(500).json({ error: "Failed to update profile" });
-    }
-  };
-  
-  
-
-module.exports = { signup, login ,updateProfile}
+module.exports = { signup,login}

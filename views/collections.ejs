@@ -39,27 +39,27 @@
   <main class="main-content position-relative border-radius-lg ">
     
     <!-- Navbar -->
-    <%- include('navbar',{header:"Food",pagename:"Food"}) %>
+    <%- include('navbar',{header:"collection",pagename:"collection"}) %>
     <!-- End Navbar -->
     <div class="container-fluid py-4">
       <div class="row">
         <div class="col-12">
           <div class="card-header pb-3">
-            <h3>Food Table</36>
+            <h3>products Table</36>
           </div>
          
           <div class="card mb-4 row">
             <div class="m"
               style="display: flex; justify-content: space-between; margin-top: 30px; margin-bottom: 25px;">
             
-              <form id="searchForm" action="/food/list" method="get">
+              <form id="searchForm" action="/collection/list" method="get">
                 <input type="text" id="searchInput" placeholder="Search.." name="search" value="<%= search %>"  style="height: 40px; width: 250px; padding-left: 35px;border: 1px solid #babdc0;border-radius: 5px;">
               </form>  
               <li class="nav-item" style="list-style: none; display: flex;">
                 <div class="btn btn-sm me-1"
                   style="font-size: 16px; display: flex; align-items: center;background-color: #26355D;color: white;">
                   <i class="ni ni-fat-add text-white opacity-10" style="font-size: 20px; margin-right: 5px;"></i>
-                  <a href="/food/add" style="text-decoration: none; color: inherit;">ADD FOOD</a>
+                  <a href="/collection/add" style="text-decoration: none; color: inherit;">ADD ITEM</a>
                 </div>   
               </li>
             </div>    
@@ -79,7 +79,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% food.forEach((item) => { %>
+                        <% collectionlist.forEach((item) => { %>
                         <tr>
                             <td>
                                 <div class="d-flex px-2 py-1">
@@ -143,7 +143,7 @@
                                 <ul class="menu-list" style="padding: 0; margin: 0; list-style: none; display: flex; gap: 10px;">
                                     <li class="menu-item"
                                         style="display: inline-block; width: 35px; height: 35px; background-color:transparent; border: 2px solid rgba(114, 113, 113, 0.687); border-radius: 50%; font-size: 20px; padding-left: 3px;">
-                                        <a href="/food/edit?food_id=<%= item._id %>"
+                                        <a href="/collection/edit?collection_id=<%= item._id %>"
                                             style="font-size: 18px; font-weight: 600; padding: 5px;" data-toggle="tooltip"
                                             data-original-title="Edit user">
                                             <i class="fa-solid fa-pencil" style="color: rgba(84, 83, 83, 0.667);"></i>
@@ -266,16 +266,16 @@
   </script>
     <!-- delete  -->
   <script>
- let foodToDelete;
+ let itemToDelete;
 
-function deleteAccountType(foodId) {
-  foodToDelete = foodId;
+function deleteAccountType(itemId) {
+  itemToDelete = itemId;
   $('#deleteModal').modal('show');
 }
 
 document.getElementById('confirmDelete').addEventListener('click', async function () {
   try {
-    const response = await fetch(`/food/delete?food_id=${foodToDelete}`, {
+    const response = await fetch(`/collection/delete?delete_id=${itemToDelete}`, {
       method: 'POST'
     });
     const result = await response.json();
@@ -336,12 +336,12 @@ document.querySelector('.btn-secondary[data-dismiss="modal"]').addEventListener(
       if (action === 'activate') {
         message.textContent = 'Are you sure activate this account?';
         confirmButton.onclick = function () {
-          window.location.href = '/food/active?id=' + itemId;
+          window.location.href = '/collection/active?id=' + itemId;
         };
       } else if (action === 'deactivate') {
         message.textContent = 'Are you sure deactivate this account?';
         confirmButton.onclick = function () {
-          window.location.href = '/food/deactive?id=' + itemId;
+          window.location.href = '/collection/deactive?id=' + itemId;
         };
       }
       modal.style.display = 'block';
